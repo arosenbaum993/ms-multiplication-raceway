@@ -1,0 +1,14 @@
+const fs=require('fs'),vm=require('vm'),assert=require('assert');
+const base=__dirname+'/../dist/',s=fs.readFileSync(base+'walkthrough.js','utf8'),html=fs.readFileSync(base+'walkthrough.html','utf8'),css=fs.readFileSync(base+'walkthrough.css','utf8');
+const navigation=s.slice(s.indexOf('function go(i){'),s.indexOf('function showError'));
+assert(!navigation.includes('podcast.pause()'),'screen transitions must never pause the podcast');
+assert(!s.includes('location.reload()'),'chart updates must use the staged screen');
+assert(html.includes('id="tour-frame-buffer"'));
+assert(navigation.includes('el(\'tour-loading\').hidden=hasScreen'),'retain the previous screen during loading');
+assert(navigation.includes('if(t!==token)return'),'discard obsolete navigation completions');
+assert(css.includes('.tour-screen.is-outgoing{opacity:1'),'outgoing screen stays opaque throughout the crossfade');
+const refresh=s.match(/function refreshView\(\)\{[^\n]+\}/)[0];
+assert(!refresh.includes('actions=[]'),'chart refresh must retain later scheduled data points');
+assert(navigation.includes('outgoing!==pendingFrame'),'rapid Next cannot destroy a page being prepared');
+new vm.Script(s);
+console.log('PASS: uninterrupted audio on navigation, two-stage screens, opaque crossfade, retained chart actions, stale-navigation guard and rapid-navigation cleanup.');

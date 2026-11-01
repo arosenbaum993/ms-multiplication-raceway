@@ -1,0 +1,5 @@
+(()=>{'use strict';
+function card(state=Fluency.read()){const E=ItemUI.esc,profile=state.profile||{},name=profile.name||(Fluency.isDemo()?'Jordan Carter':'Explorer'),grade=StudentPathway.gradeName(StudentPathway.model(state).enrolledGrade),initials=name.split(/\s+/).slice(0,2).map(n=>n[0]).join('').toUpperCase();let photo='';if(typeof profile.photoUrl==='string'){try{const url=new URL(profile.photoUrl,location.href);if(url.origin===location.origin||url.protocol==='https:')photo=url.href}catch{}}return '<section class="student-identity" aria-label="Student profile"><div class="student-avatar"><span aria-hidden="true">'+E(initials)+'</span>'+(photo?'<img src="'+E(photo)+'" alt="'+E(name)+'" data-student-photo>':'')+'</div><div class="student-identity-copy"><span class="student-identity-label">MY RACE PATHWAY</span><h2>'+E(name)+'</h2><p>'+E(grade)+' student</p></div><span class="student-grade-badge">'+E(grade)+'</span></section>'}
+function ready(){document.querySelectorAll('[data-student-photo]').forEach(img=>img.addEventListener('error',()=>img.remove(),{once:true}))}
+window.StudentIdentity={card,ready};
+})();
